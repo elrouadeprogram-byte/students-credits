@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>برنامج الرواد - الطلاب</title>
+  <style>
+    body {font-family: 'Cairo', sans-serif;background:linear-gradient(135deg,#1a2a6c,#b21f1f,#fdbb2d);margin:0;padding:20px;color:#333;}
+    h1 {text-align:center;color:white;margin-bottom:20px;font-size:36px;text-shadow:2px 2px 6px rgba(0,0,0,0.4);}
+    #searchBox {display:block;margin:0 auto 20px auto;padding:10px;width:50%;font-size:16px;border-radius:8px;border:2px solid #2575fc;}
+    table {margin:auto;border-collapse:collapse;width:85%;background:white;border-radius:12px;overflow:hidden;box-shadow:0 4px 15px rgba(0,0,0,0.2);}
+    th, td {padding:14px;text-align:center;}
+    th {background:#2575fc;color:white;font-size:18px;}
+    tr:nth-child(even){background:#f9f9f9;} tr:hover{background:#eef5ff;}
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <h1>🌟 برنامج الرواد - لوحة الشرف 🌟</h1>
+  <input type="text" id="searchBox" placeholder="🔍 ابحث عن الطالب...">
+  <table id="leaderboard">
+    <thead><tr><th>الرتبة</th><th>الطالب</th><th>الرصيد (دج)</th></tr></thead>
+    <tbody></tbody>
+  </table>
+
+<script>
+const API_URL = "YOUR_SCRIPT_URL_HERE"; // 🔗 ضع نفس رابط Google Script
+let students=[];
+
+async function fetchData(){
+  let response=await fetch(API_URL);
+  let data=await response.json();
+  students=data.slice(1).map(row=>({name:row[0],credits:parseInt(row[1])}));
+  updateLeaderboard();
+}
+
+function updateLeaderboard(){
+  students.sort((a,b)=>b.credits-a.credits);
+  const tbody=document.querySelector("#leaderboard tbody");
+  tbody.innerHTML="";
+  students.forEach((s,index)=>{
+    const row=document.createElement("tr");
+    row.innerHTML=`<td><strong>${index+1}</strong></td><td>${s.name}</td><td><strong>${s.credits}</strong></td>`;
+    tbody.appendChild(row);
+  });
+}
+
+document.getElementById("searchBox").addEventListener("input",function(){
+  let filter=this.value.trim();
+  const tbody=document.querySelector("#leaderboard tbody");
+  tbody.innerHTML="";
+  students.forEach((s,index)=>{
+    if(s.name.includes(filter)||filter===""){
+      const row=document.createElement("tr");
+      row.innerHTML=`<td><strong>${index+1}</strong></td><td>${s.name}</td><td><strong>${s.credits}</strong></td>`;
+      tbody.appendChild(row);
+    }
+  });
+});
+
+fetchData();
+</script>
+</body>
+</html>
